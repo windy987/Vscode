@@ -22,4 +22,17 @@ for 循环遍历
 #include <stdio.h>
 int main()
 {
+    int i;
+    int a[5];
+    // input
+    for (i = 0; i < 5; i++)
+        scanf("%d", &a[i]);
+    // get the biggest one
+    int max = a[0];
+    for (i = 1; i < 5; i++)
+    {
+        if (a[i] > max)
+            max = a[i];
+    }
+    printf("%d", max);
 }
