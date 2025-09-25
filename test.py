@@ -11,6 +11,5 @@ res.encoding = 'utf-8'
 
 soup = BeautifulSoup(res.text, 'lxml')
 
-links = soup.find_all('a')
-print(links)
-
+btt = soup.find_all("span", class_="btt" )
+print(btt)
