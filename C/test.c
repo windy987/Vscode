@@ -11,119 +11,55 @@ struct Node
     struct Node *next;
 };
 
-int GetElement(struct Node *head, int i)
-{
-    int count = 1;
-    struct Node *p = head;
-    while (p != NULL)
-    {
-        if (count == i)
-        {
-            return p->data;
-        }
-        else
-        {
-            count++;
-            p = p->next;
-        }
-    }
-    return -1;
-}
-
-void Print(struct Node *head)
+// 从头节点出发打印n个节点数据
+void Print(struct Node *head, int n)
 {
     struct Node *p = head;
-    int i = 1;
-    while (p != NULL)
+    for (int i = 1; i <= n; i++)
     {
-        printf("第%d个数据是%d\n", i, p->data);
-        i++;
+        printf("打印第%d个节点数据为%d\n", i, p->data);
         p = p->next;
     }
 }
 
-int Insert(struct Node **head, struct Node *newnode, int i)
+// 创建一个新节点并让它指向自己
+struct Node *create_single_node(int value)
 {
-    struct Node *p = *head;
-    int count = 1;
-
-    if (i == 1)
-    {
-        newnode->next = *head;
-        *head = newnode;
-        return 1;
-    }
-    else
-    {
-        while (p != NULL)
-        {
-            if (count == i - 1)
-            {
-                newnode->next = p->next;
-                p->next = newnode;
-                return 1;
-            }
-            count++;
-            p = p->next;
-        }
-    }
-    return -1;
+    struct Node *node = (struct Node *)malloc(sizeof(struct Node));
+    node->data = value;
+    node->next = node;
+    return node;
 }
 
-int Delete(struct Node **head, int i)
+// 插入函数
+struct Node *Insert(struct Node *head, int value)
 {
-    struct Node *p = *head;
-    int count = 1;
-
-    if (i == 1)
-    {
-        *head = p->next;
-        return 1;
-    }
+    if (head == NULL)
+        return create_single_node(value);
     else
     {
-        while (p != NULL)
-        {
-            if (count == i - 1)
-            {
-                p->next = p->next->next;
-                return 1;
-            }
-            count++;
+        // 新节点
+        struct Node *newnode = (struct Node *)malloc(sizeof(struct Node));
+        newnode->data = value;
+
+        // 找到头节点的前一个节点
+        struct Node *p = head;
+        while (p->next != head)
             p = p->next;
-        }
+
+        // 插入
+        p->next = newnode;
+        newnode->next = head;
+        return head;
     }
-    return -1;
 }
 
 int main()
 {
+    struct Node *head = NULL;
+    head = Insert(head, 1);
+    for (int i = 2; i <= 4; i++)
+        Insert(head, i);
 
-    struct Node *head = (struct Node *)malloc(sizeof(struct Node));
-    head->data = 10;
-    head->next = NULL;
-
-    struct Node *second = (struct Node *)malloc(sizeof(struct Node));
-    second->data = 20;
-    second->next = NULL;
-
-    struct Node *third = (struct Node *)malloc(sizeof(struct Node));
-    third->data = 30;
-    third->next = NULL;
-
-    head->next = second;
-    second->next = third;
-
-    struct Node *newnode = (struct Node *)malloc(sizeof(struct Node));
-    newnode->data = 66;
-    newnode->next = NULL;
-
-    if (Delete(&head, 2))
-        printf("成功删除第2个节点\n");
-
-    Print(head);
-
-    free(head);
-    free(second);
-    free(third);
+    Print(head, 10);
 }
