@@ -175,4 +175,6 @@ int main()
     free_terms(head1);
     free_terms(head2);
     free_terms(head3);
+
+    return 0;
 }
