@@ -87,39 +87,25 @@ int main()
     term *head3 = (term *)malloc(sizeof(term));
     head3->next = NULL;
 
-    // float coef;
-    // int expn;
-    // int n;
-    // for (int m = 1; m <= 2; m++)
-    // {
-    //     cout << "请输入第" << m << "个多项式的项数" << endl;
-    //     cin >> n;
-    //     for (int i = 1; i <= n; i++)
-    //     {
-    //         cout << "请输入第" << i << "项的系数" << endl;
-    //         cin >> coef;
-    //         cout << "请输入第" << i << "项的指数" << endl;
-    //         cin >> expn;
-    //         if (m == 1)
-    //             creat_newterm(&head1, coef, expn);
-    //         else
-    //             creat_newterm(&head2, coef, expn);
-    //     }
-    // }
-    // print_allterms(head1);
-    // print_allterms(head2);
-
-    // x^2 - 5x^3 + 6x^4
-    // x^3 + 5x^4 - 3x^7 + x^8
-    create_newterm(&head1, 1.0f, 2);
-    create_newterm(&head1, -5.0f, 3);
-    create_newterm(&head1, 6.0f, 4);
-
-    create_newterm(&head2, 1.0f, 3);
-    create_newterm(&head2, 5.0f, 4);
-    create_newterm(&head2, -3.0f, 7);
-    create_newterm(&head2, 1.0f, 8);
-
+    float coef;
+    int expn;
+    int n;
+    for (int m = 1; m <= 2; m++)
+    {
+        cout << "请输入第" << m << "个多项式的项数" << endl;
+        cin >> n;
+        for (int i = 1; i <= n; i++)
+        {
+            cout << "请输入第" << i << "项的系数" << endl;
+            cin >> coef;
+            cout << "请输入第" << i << "项的指数" << endl;
+            cin >> expn;
+            if (m == 1)
+                create_newterm(&head1, coef, expn);
+            else
+                create_newterm(&head2, coef, expn);
+        }
+    }
     print_allterms(head1);
     print_allterms(head2);
 

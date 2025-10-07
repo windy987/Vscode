@@ -1,65 +1,96 @@
-/*
-
-*/
-
 #include <stdio.h>
 #include <stdlib.h>
 
-struct Node
+typedef struct Node
 {
     int data;
     struct Node *next;
-};
+} Node;
 
-// 从头节点出发打印n个节点数据
-void Print(struct Node *head, int n)
+// 创建一个新节点
+Node *createNode(int data)
 {
-    struct Node *p = head;
-    for (int i = 1; i <= n; i++)
+    Node *newNode = (Node *)malloc(sizeof(Node));
+    newNode->data = data;
+    newNode->next = newNode; // 自己指向自己
+    return newNode;
+}
+
+// 在链表末尾插入新节点
+void insertNode(Node **head, int data)
+{
+    Node *newNode = createNode(data);
+    if (*head == NULL)
     {
-        printf("打印第%d个节点数据为%d\n", i, p->data);
-        p = p->next;
+        *head = newNode;
     }
-}
-
-// 创建一个新节点并让它指向自己
-struct Node *create_single_node(int value)
-{
-    struct Node *node = (struct Node *)malloc(sizeof(struct Node));
-    node->data = value;
-    node->next = node;
-    return node;
-}
-
-// 插入函数
-struct Node *Insert(struct Node *head, int value)
-{
-    if (head == NULL)
-        return create_single_node(value);
     else
     {
-        // 新节点
-        struct Node *newnode = (struct Node *)malloc(sizeof(struct Node));
-        newnode->data = value;
-
-        // 找到头节点的前一个节点
-        struct Node *p = head;
-        while (p->next != head)
-            p = p->next;
-
-        // 插入
-        p->next = newnode;
-        newnode->next = head;
-        return head;
+        Node *temp = *head;
+        while (temp->next != *head)
+        {
+            temp = temp->next;
+        }
+        temp->next = newNode;
+        newNode->next = *head;
     }
+}
+
+// 打印链表
+void printList(Node *head)
+{
+    Node *temp = head;
+    if (head != NULL)
+    {
+        do
+        {
+            printf("节点数据: %d\n", temp->data);
+            temp = temp->next;
+        } while (temp != head);
+    }
+}
+
+// 解决约瑟夫问题
+int josephus(int n, int m)
+{
+    Node *head = NULL;
+
+    // 创建循环链表
+    for (int i = 1; i <= n; i++)
+    {
+        insertNode(&head, i);
+    }
+
+    Node *temp = head;
+    while (temp->next != temp)
+    { // 直到链表只剩一个节点
+        for (int i = 1; i < m; i++)
+        {
+            temp = temp->next; // 移动到第 m 个节点
+        }
+        // 删除第 m 个节点
+        printf("删除节点: %d\n", temp->data);
+        Node *toDelete = temp->next;
+        temp->next = toDelete->next;
+        free(toDelete);
+        temp = temp->next;
+    }
+
+    int last = temp->data;
+    free(temp); // 删除最后剩下的节点
+    return last;
 }
 
 int main()
 {
-    struct Node *head = NULL;
-    head = Insert(head, 1);
-    for (int i = 2; i <= 4; i++)
-        Insert(head, i);
+    int n, m;
+    printf("请输入总人数: ");
+    scanf("%d", &n);
+    printf("请输入每次报数的间隔: ");
+    scanf("%d", &m);
 
-    Print(head, 10);
+    int result = josephus(n, m);
+    printf("最后剩下的人是: %d\n", result);
+
+    return 0;
 }
