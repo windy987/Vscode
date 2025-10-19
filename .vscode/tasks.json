@@ -2,18 +2,28 @@
 	"version": "2.0.0",
 	"tasks": [
 		{
+			"label": "Create C/output folder",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"if not exist \"${workspaceFolder}\\C\\output\" mkdir \"${workspaceFolder}\\C\\output\""
+			],
+			"problemMatcher": []
+		},
+		{
 			"type": "cppbuild",
-			"label": "C/C++: g++.exe 生成活动文件",
-			"command": "D:\\mingw64\\bin\\g++.exe",
+			"label": "build active file to C/output (g++)",
+			"command": "D:\\code interpreter\\mingw64\\bin\\g++.exe",
 			"args": [
 				"-fdiagnostics-color=always",
 				"-g",
 				"${file}",
 				"-o",
-				"D:/Vscode/C/output/${fileBasenameNoExtension}.exe" // 修改输出目录
+				"${workspaceFolder}\\C\\output\\${fileBasenameNoExtension}.exe"
 			],
 			"options": {
-				"cwd": "${fileDirname}"
+				"cwd": "${workspaceFolder}\\C"
 			},
 			"problemMatcher": [
 				"$gcc"
@@ -22,7 +32,10 @@
 				"kind": "build",
 				"isDefault": true
 			},
-			"detail": "编译器: D:\\mingw64\\bin\\g++.exe"
+			"dependsOn": [
+				"Create C/output folder"
+			],
+			"detail": "编译器: D:\\code interpreter\\mingw64\\bin\\g++.exe"
 		}
 	]
 }
