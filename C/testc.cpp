@@ -31,7 +31,6 @@ class Point
 public:
 	Point(float xx, float yy)
 	{
-		x = xx;
 		y = yy;
 	}; // 构造函数，初始化点的x, y坐标
 	void setX(float newX) { x = newX; }; // 重设横坐标为newX
