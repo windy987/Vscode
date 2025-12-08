@@ -40,13 +40,13 @@ int Partition(Sqlist &L, int low, int high)
     while (low < high)
     {
         // high向左挪，一旦遇到比pivotkey小的就和r[low]交换
-        while (low < high && L.r[high].key > pivotkey)
+        while (low < high && L.r[high].key >= pivotkey)
             high--;
         L.r[0] = L.r[low];
         L.r[low] = L.r[high];
         L.r[high] = L.r[0];
         // low向右挪，一旦遇到比pivotkey大的就和r[high]交换
-        while (low < high && L.r[low].key < pivotkey)
+        while (low < high && L.r[low].key <= pivotkey)
             low++;
         L.r[0] = L.r[low];
         L.r[low] = L.r[high];
@@ -55,15 +55,18 @@ int Partition(Sqlist &L, int low, int high)
     return low;
 }
 
-void Quick_Sort(Sqlist &L, int low, int high)
+// 递归写法的快速排序
+void Quick_Sort_Recursion(Sqlist &L, int low, int high)
 {
-    if (low >= high)
-        return;
-    int pivot = Partition(L, low, high);
-    Quick_Sort(L, low, pivot - 1);
-    Quick_Sort(L, pivot + 1, high);
+    if (low < high)
+    {
+        int pivot = Partition(L, low, high);
+        Quick_Sort_Recursion(L, low, pivot - 1);
+        Quick_Sort_Recursion(L, pivot + 1, high);
+    }
 }
 
+// 测试数据
 int main()
 {
     Sqlist *L = new Sqlist;
@@ -76,7 +79,7 @@ int main()
     L->r[6].key = 1;
     L->r[7].key = 2;
     L->r[8].key = 4;
-    Quick_Sort(*L, 1, 8);
+    Quick_Sort_Recursion(*L, 1, 8);
     // Bubble_Sort(*L);
     for (int i = 1; i < L->length; i++)
         cout << L->r[i].key << ' ';

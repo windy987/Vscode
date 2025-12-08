@@ -1,169 +1,113 @@
+// 声明一个Shape基类，在此基础上公有派生出矩形Rectangle类和圆Circle类，
+// 二者都有函数GetArea()计算对象的面积，利用矩形类公有派生一个正方形Square类。
+// （1）Shape基类的公有成员为：
+// Shape()：构造函数
+// float GetArea()：其返回值为-1
+// void Print()：输出，函数体为空
+// （2）Rectangle类的公有成员为：
+// Rectangle(float l, float w)：构造函数
+// GetArea()：计算矩形的面积
+// Print()： 输出矩形的长、宽和面积
+// 私有成员为：
+// float width：矩形的宽
+// float length：矩形的长
+// （3）Circle类的公有成员为：
+// Circle(float r)：构造函数
+// GetArea()：计算圆的面积
+// Print()：输出圆的半径和面积
+// 私有成员为：
+// float radius：圆的半径
+// （4）Square类的公有成员为：
+// Square(float l)：构造函数
+// （5）主函数中通过Shape指针sp来实现对其他派生类对象的操作。
+// 矩形输出成员函数为：
+// void Print()
+// {
+//     cout << "矩形的长为: " << length << endl;
+//     cout << "矩形的宽为: " << width << endl;
+//     cout << "矩形的面积为: " << GetArea() << endl;
+// }
+// 圆输出成员函数为：
+// void Print()
+// {
+//     cout << "圆的半径为: " << radius << endl;
+//     cout << "圆的面积为: " << GetArea() << endl;
+// }
+// 正方形输出成员函数为：
+// void Print()
+// {
+//     cout << "正方形的半径为: " << R << endl;
+//     cout << "正方形的面积为: " << GetArea() << endl;
+// }
 #include <iostream>
-#include <string.h>
 using namespace std;
-class Date
+
+class Shape
 {
 public:
-    Date(int y, int m, int d) : year(y), month(m), day(d) {}
-    Date(const Date &d)
-    {
-        year = d.year;
-        month = d.month;
-        day = d.day;
-    }
-    void display()
-    {
-        cout << " 出生日期为" << year << '-' << month << '-' << day << endl;
-    }
-
-private:
-    int year;
-    int month;
-    int day;
+    Shape() {}
+    virtual float GetArea() { return -1; }
+    virtual void Print() {}
 };
 
-class People
+class Rectangle : public Shape
 {
-public:
-    People(char na[], char nu[], char s, char i[], int y, int m, int d) : birthday(y, m, d)
-    {
-        strcpy(name, na);
-        strcpy(number, nu);
-        sex = s;
-        strcpy(id, i);
-    }
-    People(const People &p) : birthday(p.birthday)
-    {
-        strcpy(name, p.name);
-        strcpy(number, p.number);
-        sex = p.sex;
-        strcpy(id, p.id);
-    }
-    ~People() {}
-    inline void show()
-    {
-        cout << "姓名：" << name << " 编号：" << number << " 性别：" << sex << " 身份证号：" << id;
-        birthday.display();
-    }
-
 private:
-    char name[11];
-    char number[7];
-    char sex;
-    Date birthday;
-    char id[16];
+    float width;
+    float length;
+
+public:
+    Rectangle(float l, float w) : width(w), length(l) {}
+    float GetArea() { return width * length; }
+    void Print()
+    {
+        cout << "矩形的长为: " << length << endl;
+        cout << "矩形的宽为: " << width << endl;
+        cout << "矩形的面积为: " << GetArea() << endl;
+    }
 };
 
-class Student : virtual public People
+class Circle : public Shape
 {
-public:
-    Student(char na[], char nu[], char s, char i[], int y, int m, int d, char cNo[])
-        : People(na, nu, s, i, y, m, d)
-    {
-        strcpy(classNo, cNo);
-    }
-
-    void show()
-    {
-        People::show();
-        cout << "班号：" << classNo << endl;
-    }
-
 private:
-    char classNo[7];
+    float radius;
+
+public:
+    Circle(float r) : radius(r) {}
+    float GetArea() { return radius * radius * 3.14159; }
+    void Print()
+    {
+        cout << "圆的半径为: " << radius << endl;
+        cout << "圆的面积为: " << GetArea() << endl;
+    }
 };
 
-class Teacher : virtual public People
+class Square : public Rectangle
 {
-public:
-    Teacher(char na[], char nu[], char s, char i[], int y, int m, int d, char prin[], char dept[])
-        : People(na, nu, s, i, y, m, d)
-    {
-        strcpy(principalship, prin);
-        strcpy(department, dept);
-    }
-
-    void show()
-    {
-        People::show();
-        cout << "职务：" << principalship << " 部门：" << department << endl;
-    }
-
 private:
-    char principalship[11];
-    char department[21];
-};
+    float R;
 
-class Graduate : public Student
-{
 public:
-    Graduate(char na[], char nu[], char s, char i[], int y, int m, int d, char cNo[], char sub[], Teacher adv)
-        : People(na, nu, s, i, y, m, d), Student(na, nu, s, i, y, m, d, cNo), adviser(adv)
+    Square(float l) : Rectangle(l, l), R(l) {}
+    float GetArea() { return R * R; }
+    void Print()
     {
-        strcpy(subject, sub);
-    }
-
-    void show()
-    {
-        cout << "研究生信息" << endl;
-        Student::show();
-        cout << "专业：" << subject << endl;
-        cout << "导师信息：" << endl;
-        adviser.show();
-    }
-
-private:
-    char subject[21];
-    Teacher adviser;
-};
-
-class TA : public Graduate, public Teacher
-{
-public:
-    TA(char na[], char nu[], char s, char i[], int y, int m, int d,
-       char cNo[], char sub[], Teacher adv,
-       char prin[], char dept[])
-        : People(na, nu, s, i, y, m, d),
-          Graduate(na, nu, s, i, y, m, d, cNo, sub, adv),
-          Teacher(na, nu, s, i, y, m, d, prin, dept)
-    {
-    }
-
-    void show()
-    {
-        cout << "助教详细信息" << endl;
-        Graduate::show();
-        cout << "助教工作信息" << endl;
-        Teacher::show();
+        cout << "正方形的半径为: " << R << endl;
+        cout << "正方形的面积为: " << GetArea() << endl;
     }
 };
 
 int main()
 {
-    // 1. 创建一个导师对象
-    char t_na[] = "Prof.Wang";
-    char t_nu[] = "T001";
-    char t_s = 'M';
-    char t_id[] = "11010119800101";
-    char t_job[] = "Professor";
-    char t_dept[] = "ComputerScience";
-    Teacher adviser(t_na, t_nu, t_s, t_id, 1980, 1, 1, t_job, t_dept);
-
-    // 2. 创建一个助教对象
-    char ta_na[] = "LiMing";
-    char ta_nu[] = "S2023";
-    char ta_s = 'M';
-    char ta_id[] = "11010120000505";
-    char ta_class[] = "CS2301";
-    char ta_sub[] = "AI_Research";
-    char ta_job[] = "Assistant";
-    char ta_dept[] = "ComputerScience";
-
-    TA ta(ta_na, ta_nu, ta_s, ta_id, 2000, 5, 5,
-          ta_class, ta_sub, adviser,
-          ta_job, ta_dept);
-
-    ta.show();
-
+    Shape *sp1, *sp2, *sp3; // Shape类的指针
+    sp1 = new Rectangle(3, 4);
+    sp2 = new Circle(5);
+    sp3 = new Square(2);
+    cout << sp1->GetArea() << endl;
+    sp1->Print();
+    cout << sp2->GetArea() << endl;
+    sp2->Print();
+    cout << sp3->GetArea() << endl;
+    sp3->Print();
     return 0;
 }
