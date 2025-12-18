@@ -26,26 +26,27 @@ class Employee
 private:
     string name;
     static int id;
+    int idVal;
     string sex;
     int grade;
 
 public:
     Employee(string name, string sex, int grade)
     {
-        id++;
+        idVal = ++id;
         this->name = name;
         this->sex = sex;
         this->grade = grade;
     }
     string get_name() { return name; }
-    int get_id() { return id; }
+    int get_id() { return idVal; }
     string get_sex() { return sex; }
     int get_grade() { return grade; }
     virtual int get_salary() = 0;
     virtual void printInfo()
     {
         cout << "姓名：" << name << "\n"
-             << "id：" << id << "\n"
+             << "id：" << idVal << "\n"
              << "性别：" << sex << "\n"
              << "级别：" << grade << endl;
     }
@@ -154,13 +155,13 @@ class EmployeeArray
 private:
     Employee **data; // data数组存基类指针，在构造函数中动态分配内存
     int capacity;    // 容量大小
-    int i;           // 数组索引
+    int size;        // 数组索引
 
 public:
     EmployeeArray(int c) : capacity(c)
     {
         data = new Employee *[capacity];
-        i = 0;
+        size = 0;
     }
     ~EmployeeArray()
     {
@@ -177,6 +178,17 @@ public:
         int fixedSalary;
         int salesAmount;
         int commissionRate;
+        // 扩容
+        if (size == capacity)
+        {
+            int newCap = capacity > 0 ? capacity * 2 : 1;
+            Employee **newData = new Employee *[newCap];
+            for (int k = 0; k < size; ++k)
+                newData[k] = data[k];
+            delete[] data;
+            data = newData;
+            capacity = newCap;
+        }
         cout << "员工的职位是：";
         cin >> role;
         // 录入技术人员信息
@@ -184,37 +196,55 @@ public:
         {
             cout << "请依次输入姓名、性别、级别、每日工作时长、每小时薪水" << endl;
             cin >> name >> sex >> grade >> workHours >> hourRate;
-            Employee *p = new Technician(name, sex, grade, workHours, hourRate);
-            data[i++] = p;
+            if (sex == "男" || sex == "女")
+            {
+                Employee *p = new Technician(name, sex, grade, workHours, hourRate);
+                data[size++] = p;
+            }
+            else
+                cout << "性别输入错误" << endl;
         }
         // 录入经理信息
-        else if (role == "经理")
+        else if (role == "经理" || role == "jingli")
         {
             cout << "请依次输入姓名、性别、级别、固定月薪" << endl;
             cin >> name >> sex >> grade >> fixedSalary;
-            Employee *p = new Manager(name, sex, grade, fixedSalary);
-            data[i++] = p;
+            if (sex == "男" || sex == "女")
+            {
+                Employee *p = new Manager(name, sex, grade, fixedSalary);
+                data[size++] = p;
+            }
+            else
+                cout << "性别输入错误" << endl;
         }
-        // 录入销售员信息
-        else if (role == "销售")
+        // 录入销售信息
+        else if (role == "销售" || role == "销售员" || role == "销售人员" || role == "xiaoshou")
         {
             cout << "请依次输入姓名、性别、级别、当月销售额、提成比例" << endl;
             cin >> name >> sex >> grade >> salesAmount >> commissionRate;
-            Employee *p = new Salesman(name, sex, grade, salesAmount, commissionRate);
-            data[i++] = p;
+            if (sex == "男" || sex == "女")
+            {
+                Employee *p = new Salesman(name, sex, grade, salesAmount, commissionRate);
+                data[size++] = p;
+            }
+            else
+                cout << "性别输入错误" << endl;
         }
         // 录入销售经理信息
         else if (role == "销售经理")
         {
             cout << "请依次输入姓名、性别、级别、固定月薪、当月销售额、提成比例" << endl;
             cin >> name >> sex >> grade >> fixedSalary >> salesAmount >> commissionRate;
-            Employee *p = new Salesmanager(name, sex, grade, fixedSalary, salesAmount, commissionRate);
-            data[i++] = p;
+            if (sex == "男" || sex == "女")
+            {
+                Employee *p = new Salesmanager(name, sex, grade, fixedSalary, salesAmount, commissionRate);
+                data[size++] = p;
+            }
+            else
+                cout << "性别输入错误" << endl;
         }
         else
-        {
             cout << "职位输入错误" << endl;
-        }
     }
     void lookup_name()
     {
@@ -222,7 +252,7 @@ public:
         cout << "请输入要查询的员工的姓名：";
         cin >> name;
         int idx = -1;
-        for (int k = 0; k < i; k++)
+        for (int k = 0; k < size; k++)
         {
             if (data[k]->get_name() == name)
             {
@@ -243,7 +273,7 @@ public:
         cout << "请输入要查询的员工的id：";
         cin >> id;
         int idx = -1;
-        for (int k = 0; k < i; k++)
+        for (int k = 0; k < size; k++)
         {
             if (data[k]->get_id() == id)
             {
@@ -262,7 +292,32 @@ public:
 
 int main()
 {
-    EmployeeArray e(5);
-    e.push();
-    e.lookup_id();
+    EmployeeArray e(1);
+    while (1)
+    {
+        int i;
+        cout << "要录入员工信息请按1" << endl;
+        cout << "按名字查询员工信息请按2" << endl;
+        cout << "按id查询员工信息请按2" << endl;
+        cin >> i;
+        switch (i)
+        {
+        case 1:
+            int i;
+            cout << "要录入几个员工？";
+            cin >> i;
+            while (i--)
+                e.push();
+            break;
+        case 2:
+            e.lookup_name();
+            break;
+        case 3:
+            e.lookup_id();
+            break;
+        default:
+            break;
+        }
+        cout << "--------------------" << endl;
+    }
 }
