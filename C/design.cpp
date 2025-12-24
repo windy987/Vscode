@@ -17,10 +17,10 @@
 // -销售经理既拿固定月薪也领取销售提成。
 // 8.根据需要添加的其他功能，如：用户管理、员工生日提醒、员工转正提醒等功能。
 
-// 输错职务、性别后重新输入
-// 用户输入内容前加上>符号用于区分，加一些换行是交互界面更整洁
-// 加一个退出程序的选项
-// 添加成功删除成员信息
+// 输错职务、性别后重新输入 ~
+// 用户输入内容前加上>符号用于区分，加一些换行是交互界面更整洁 ~
+// 加一个退出程序的选项 ~
+// 添加成功删除成员信息 ~
 
 #include <iostream>
 using namespace std;
@@ -50,6 +50,7 @@ public:
     int get_grade() { return grade; }
     virtual int get_salary() = 0;
     virtual string get_role() = 0;
+    void grade_up() { grade++; }
     virtual void promote() = 0;
     virtual void printInfo()
     {
@@ -79,7 +80,19 @@ public:
     int get_workHours() { return workHours; }
     int get_hourRate() { return hourRate; }
     int get_salary() override { return workHours * hourRate; }
+    void add_hourRate() { hourRate += 100; }
     string get_role() override { return "Technician"; }
+    void promote() override
+    {
+        if (get_grade() < 5)
+        {
+            grade_up();
+            add_hourRate();
+            cout << "已提升级别为" << get_grade() << ",时薪增加100为" << get_hourRate() << endl;
+        }
+        else
+            cout << "级别已最高" << endl;
+    }
     void printInfo() override
     {
         cout << "职务：技术人员" << endl;
@@ -104,7 +117,19 @@ public:
     }
     int get_fixedSalary() { return fixedSalary; }
     int get_salary() override { return fixedSalary; }
+    void add_fixedSalary() { fixedSalary += 10000; }
     string get_role() override { return "Manager"; }
+    void promote() override
+    {
+        if (get_grade() < 5)
+        {
+            grade_up();
+            add_fixedSalary();
+            cout << "已提升级别为" << get_grade() << ",固定薪资增加10000为" << get_fixedSalary() << endl;
+        }
+        else
+            cout << "级别已最高" << endl;
+    }
     void printInfo() override
     {
         cout << "职务：经理" << endl;
@@ -130,7 +155,19 @@ public:
     int get_salesAmount() { return salesAmount; }
     float get_commissionRate() { return commissionRate; }
     int get_salary() override { return salesAmount * commissionRate; }
+    void add_commissionRate() { commissionRate += 0.1; }
     string get_role() override { return "Salesman"; }
+    void promote() override
+    {
+        if (get_grade() < 5)
+        {
+            grade_up();
+            add_commissionRate();
+            cout << "已提升级别为" << get_grade() << ",提成比例增加0.1为" << get_commissionRate() << endl;
+        }
+        else
+            cout << "级别已最高" << endl;
+    }
     void printInfo() override
     {
         cout << "职务：销售" << endl;
@@ -151,6 +188,18 @@ public:
           Salesman(name, sex, grade, salesAmount, commissionRate) {}
     int get_salary() override { return get_fixedSalary() + get_salesAmount() * get_commissionRate(); }
     string get_role() override { return "Salesmanager"; }
+    void promote() override
+    {
+        if (get_grade() < 5)
+        {
+            grade_up();
+            add_commissionRate();
+            add_fixedSalary();
+            cout << "已提升级别为" << get_grade() << ",提成比例增加0.1为" << get_commissionRate() << ",固定薪资增加10000为" << get_fixedSalary() << endl;
+        }
+        else
+            cout << "级别已最高" << endl;
+    }
     void printInfo() override
     {
         cout << "职务：销售经理" << endl;
@@ -202,75 +251,95 @@ public:
             data = newData;
             capacity = newCap;
         }
-        cout << "员工的职位是：";
-        cin >> role;
-        // 录入技术人员信息
-        if (role == "技术人员" || role == "技术" || role == "jishu")
+        while (1)
         {
-            cout << "请依次输入姓名、性别、级别(1-5)、每日工作时长、每小时薪水" << endl;
-            cin >> name >> sex >> grade >> workHours >> hourRate;
-            Employee *p = new Technician(name, sex, grade, workHours, hourRate);
-            data[size++] = p;
-            // if (sex == "男" || sex == "女")
-            // {
-            //     Employee *p = new Technician(name, sex, grade, workHours, hourRate);
-            //     data[size++] = p;
-            // }
-            // else
-            //     cout << "性别输入错误" << endl;
+            cout << "员工的职位是：" << endl;
+            cout << '>';
+            cin >> role;
+            if (role == "技术人员" || role == "技术" || role == "jishu")
+            {
+                cout << "请依次输入姓名、性别、级别(1-5)、每日工作时长、每小时薪水" << endl;
+                cin >> name >> sex >> grade >> workHours >> hourRate;
+                Employee *p = new Technician(name, sex, grade, workHours, hourRate);
+                data[size++] = p;
+                // if (sex == "男" || sex == "女")
+                // {
+                //     Employee *p = new Technician(name, sex, grade, workHours, hourRate);
+                //     data[size++] = p;
+                // }
+                // else
+                // {
+                //     cout << "性别输入错误请重新输入" << endl;
+                //     continue;
+                // }
+                break;
+            }
+            // 录入经理信息
+            else if (role == "经理" || role == "jingli")
+            {
+                cout << "请依次输入姓名、性别、级别(1-5)、固定月薪" << endl;
+                cin >> name >> sex >> grade >> fixedSalary;
+                Employee *p = new Manager(name, sex, grade, fixedSalary);
+                data[size++] = p;
+                // if (sex == "男" || sex == "女")
+                // {
+                //     Employee *p = new Manager(name, sex, grade, fixedSalary);
+                //     data[size++] = p;
+                // }
+                // else
+                // {
+                //     cout << "性别输入错误请重新输入" << endl;
+                //     continue;
+                // }
+                break;
+            }
+            // 录入销售信息
+            else if (role == "销售" || role == "销售员" || role == "销售人员" || role == "xiaoshou")
+            {
+                cout << "请依次输入姓名、性别、级别(1-5)、当月销售额、提成比例" << endl;
+                cin >> name >> sex >> grade >> salesAmount >> commissionRate;
+                Employee *p = new Salesman(name, sex, grade, salesAmount, commissionRate);
+                data[size++] = p;
+                // if (sex == "男" || sex == "女")
+                // {
+                //     Employee *p = new Salesman(name, sex, grade, salesAmount, commissionRate);
+                //     data[size++] = p;
+                // }
+                // else
+                // {
+                //     cout << "性别输入错误请重新输入" << endl;
+                //     continue;
+                // }
+                break;
+            }
+            // 录入销售经理信息
+            else if (role == "销售经理" || role == "xiaoshoujingli")
+            {
+                cout << "请依次输入姓名、性别、级别(1-5)、固定月薪、当月销售额、提成比例" << endl;
+                cin >> name >> sex >> grade >> fixedSalary >> salesAmount >> commissionRate;
+                Employee *p = new Salesmanager(name, sex, grade, fixedSalary, salesAmount, commissionRate);
+                data[size++] = p;
+                // if (sex == "男" || sex == "女")
+                // {
+                //     Employee *p = new Salesmanager(name, sex, grade, fixedSalary, salesAmount, commissionRate);
+                //     data[size++] = p;
+                // }
+                // else
+                // {
+                //     cout << "性别输入错误请重新输入" << endl;
+                //     continue;
+                // }
+                break;
+            }
+            else
+                cout << "职位输入错误请重新输入" << endl;
         }
-        // 录入经理信息
-        else if (role == "经理" || role == "jingli")
-        {
-            cout << "请依次输入姓名、性别、级别(1-5)、固定月薪" << endl;
-            cin >> name >> sex >> grade >> fixedSalary;
-            Employee *p = new Manager(name, sex, grade, fixedSalary);
-            data[size++] = p;
-            // if (sex == "男" || sex == "女")
-            // {
-            //     Employee *p = new Manager(name, sex, grade, fixedSalary);
-            //     data[size++] = p;
-            // }
-            // else
-            //     cout << "性别输入错误" << endl;
-        }
-        // 录入销售信息
-        else if (role == "销售" || role == "销售员" || role == "销售人员" || role == "xiaoshou")
-        {
-            cout << "请依次输入姓名、性别、级别(1-5)、当月销售额、提成比例" << endl;
-            cin >> name >> sex >> grade >> salesAmount >> commissionRate;
-            Employee *p = new Salesman(name, sex, grade, salesAmount, commissionRate);
-            data[size++] = p;
-            // if (sex == "男" || sex == "女")
-            // {
-            //     Employee *p = new Salesman(name, sex, grade, salesAmount, commissionRate);
-            //     data[size++] = p;
-            // }
-            // else
-            //     cout << "性别输入错误" << endl;
-        }
-        // 录入销售经理信息
-        else if (role == "销售经理" || role == "xiaoshoujingli")
-        {
-            cout << "请依次输入姓名、性别、级别(1-5)、固定月薪、当月销售额、提成比例" << endl;
-            cin >> name >> sex >> grade >> fixedSalary >> salesAmount >> commissionRate;
-            Employee *p = new Salesmanager(name, sex, grade, fixedSalary, salesAmount, commissionRate);
-            data[size++] = p;
-            // if (sex == "男" || sex == "女")
-            // {
-            //     Employee *p = new Salesmanager(name, sex, grade, fixedSalary, salesAmount, commissionRate);
-            //     data[size++] = p;
-            // }
-            // else
-            //     cout << "性别输入错误" << endl;
-        }
-        else
-            cout << "职位输入错误" << endl;
     }
     void lookup_name()
     {
         string name;
-        cout << "请输入要查询的员工的姓名：";
+        cout << "请输入要查询的员工的姓名：" << endl;
+        cout << '>';
         cin >> name;
         int idx = -1;
         for (int k = 0; k < size; k++)
@@ -291,7 +360,8 @@ public:
     void lookup_id()
     {
         int id;
-        cout << "请输入要查询的员工的id：";
+        cout << "请输入要查询的员工的id：" << endl;
+        cout << '>';
         cin >> id;
         int idx = -1;
         for (int k = 0; k < size; k++)
@@ -312,7 +382,8 @@ public:
     void remove_by_name()
     {
         string name;
-        cout << "请输入要删除的员工的名字：";
+        cout << "请输入要删除的员工的名字：" << endl;
+        cout << '>';
         cin >> name;
         int idx = -1;
         for (int k = 0; k < size; k++)
@@ -331,11 +402,13 @@ public:
             cout << "未找到此员工" << endl;
             return;
         }
+        cout << "已成功删除" << endl;
     }
     void remove_by_id()
     {
         int id;
-        cout << "请输入要删除的员工的id：";
+        cout << "请输入要删除的员工的id：" << endl;
+        cout << '>';
         cin >> id;
         int idx = -1;
         for (int k = 0; k < size; k++)
@@ -354,6 +427,7 @@ public:
             cout << "未找到此员工" << endl;
             return;
         }
+        cout << "已成功删除" << endl;
     }
     void list_all_employees()
     {
@@ -389,6 +463,21 @@ public:
              << "所有销售的总工资占比为：" << salary_Salesman / salary_amount << "\n"
              << "所有销售经理的总工资占比为：" << salary_Salesmanager / salary_amount << endl;
     }
+    void promote()
+    {
+        string s;
+        cout << "请输入员工姓名" << endl;
+        cout << '>';
+        cin >> s;
+        for (int i = 0; i < size; i++)
+        {
+            if (data[i]->get_name() == s)
+            {
+                data[i]->promote();
+                break;
+            }
+        }
+    }
 };
 
 int main()
@@ -397,19 +486,23 @@ int main()
     while (1)
     {
         int i;
-        cout << "要录入员工信息请按1" << endl;
+        cout << "录入员工信息请按1" << endl;
         cout << "按名字查询员工信息请按2" << endl;
         cout << "按id查询员工信息请按3" << endl;
         cout << "按名字删除员工信息请按4" << endl;
         cout << "按id删除员工信息请按5" << endl;
         cout << "罗列所有员工信息请按6" << endl;
         cout << "计算并展示工资占比情况请按7" << endl;
+        cout << "晋升员工请按8" << endl;
+        cout << "退出程序请按9" << endl;
+        cout << '>';
         cin >> i;
         switch (i)
         {
         case 1:
             int i;
-            cout << "要录入几个员工？";
+            cout << "要录入几个员工？" << endl;
+            cout << '>';
             cin >> i;
             while (i--)
                 e.push();
@@ -432,6 +525,11 @@ int main()
         case 7:
             e.salary_count_display();
             break;
+        case 8:
+            e.promote();
+            break;
+        case 9:
+            exit(0);
         default:
             break;
         }
