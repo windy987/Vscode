@@ -23,6 +23,7 @@
 // 添加成功删除成员信息 ~
 
 #include <iostream>
+#include <fstream>
 using namespace std;
 
 // 员工基类
@@ -34,20 +35,26 @@ private:
     int idVal;
     string sex;
     int grade;
+    int birthMonth;
+    int birthDay;
 
 public:
-    Employee(string name, string sex, int grade)
+    Employee(string name, string sex, int grade, int bm = 0, int bd = 0)
     {
         idVal = ++id;
         this->name = name;
         this->sex = sex;
         this->grade = grade;
+        birthMonth = bm;
+        birthDay = bd;
     }
     virtual ~Employee() = default;
     string get_name() { return name; }
     int get_id() { return idVal; }
     string get_sex() { return sex; }
     int get_grade() { return grade; }
+    int get_birthMonth() { return birthMonth; }
+    int get_birthDay() { return birthDay; }
     virtual int get_salary() = 0;
     virtual string get_role() = 0;
     void grade_up() { grade++; }
@@ -57,8 +64,12 @@ public:
         cout << "姓名：" << name << "\n"
              << "id：" << idVal << "\n"
              << "性别：" << sex << "\n"
-             << "级别：" << grade << endl;
+             << "级别：" << grade << "\n"
+             << "生日：" << birthMonth << "月" << birthDay << "日" << endl; // 显示生日
     }
+
+    // 新增：由对象负责将自身写入文件（多态）
+    virtual void save(ofstream &out) = 0;
 };
 
 int Employee::id = 1000;
@@ -71,8 +82,8 @@ private:
     int hourRate;
 
 public:
-    Technician(string name, string sex, int grade, int workHours, int hourRate)
-        : Employee(name, sex, grade)
+    Technician(string name, string sex, int grade, int workHours, int hourRate, int bm = 0, int bd = 0)
+        : Employee(name, sex, grade, bm, bd)
     {
         this->workHours = workHours;
         this->hourRate = hourRate;
@@ -101,6 +112,14 @@ public:
              << "每小时薪水：" << get_hourRate() << "\n"
              << "总薪水：" << get_salary() << endl;
     }
+
+    // 实现 save
+    void save(ofstream &out) override
+    {
+        out << "Technician" << ' ' << get_name() << ' ' << get_sex() << ' ' << get_grade() << ' '
+            << workHours << ' ' << hourRate << ' '
+            << get_birthMonth() << ' ' << get_birthDay() << '\n';
+    }
 };
 
 // 经理
@@ -110,8 +129,8 @@ private:
     int fixedSalary;
 
 public:
-    Manager(string name, string sex, int grade, int fixedSalary)
-        : Employee(name, sex, grade)
+    Manager(string name, string sex, int grade, int fixedSalary, int bm = 0, int bd = 0)
+        : Employee(name, sex, grade, bm, bd)
     {
         this->fixedSalary = fixedSalary;
     }
@@ -136,6 +155,13 @@ public:
         Employee::printInfo();
         cout << "薪水：" << get_salary() << endl;
     }
+
+    // 实现 save
+    void save(ofstream &out) override
+    {
+        out << "Manager" << ' ' << get_name() << ' ' << get_sex() << ' ' << get_grade() << ' '
+            << fixedSalary << ' ' << get_birthMonth() << ' ' << get_birthDay() << '\n';
+    }
 };
 
 // 销售
@@ -146,16 +172,16 @@ private:
     float commissionRate;
 
 public:
-    Salesman(string name, string sex, int grade, int salesAmount, float commissionRate)
-        : Employee(name, sex, grade)
+    Salesman(string name, string sex, int grade, int salesAmount, float commissionRate, int bm = 0, int bd = 0)
+        : Employee(name, sex, grade, bm, bd)
     {
         this->salesAmount = salesAmount;
         this->commissionRate = commissionRate;
     }
     int get_salesAmount() { return salesAmount; }
     float get_commissionRate() { return commissionRate; }
-    int get_salary() override { return salesAmount * commissionRate; }
-    void add_commissionRate() { commissionRate += 0.1; }
+    int get_salary() override { return (int)(salesAmount * commissionRate); }
+    void add_commissionRate() { commissionRate += 0.1f; }
     string get_role() override { return "Salesman"; }
     void promote() override
     {
@@ -176,17 +202,25 @@ public:
              << "提成比例：" << commissionRate << "\n"
              << "总工资：" << get_salary() << endl;
     }
+
+    // 实现 save
+    void save(ofstream &out) override
+    {
+        out << "Salesman" << ' ' << get_name() << ' ' << get_sex() << ' ' << get_grade() << ' '
+            << salesAmount << ' ' << commissionRate << ' '
+            << get_birthMonth() << ' ' << get_birthDay() << '\n';
+    }
 };
 
 // 销售经理
 class Salesmanager : public Manager, public Salesman
 {
 public:
-    Salesmanager(string name, string sex, int grade, int fixedSalary, int salesAmount, float commissionRate)
-        : Employee(name, sex, grade),
-          Manager(name, sex, grade, fixedSalary),
-          Salesman(name, sex, grade, salesAmount, commissionRate) {}
-    int get_salary() override { return get_fixedSalary() + get_salesAmount() * get_commissionRate(); }
+    Salesmanager(string name, string sex, int grade, int fixedSalary, int salesAmount, float commissionRate, int bm = 0, int bd = 0)
+        : Employee(name, sex, grade, bm, bd),
+          Manager(name, sex, grade, fixedSalary, bm, bd),
+          Salesman(name, sex, grade, salesAmount, commissionRate, bm, bd) {}
+    int get_salary() override { return get_fixedSalary() + (int)(get_salesAmount() * get_commissionRate()); }
     string get_role() override { return "Salesmanager"; }
     void promote() override
     {
@@ -209,6 +243,14 @@ public:
              << "提成比例：" << get_commissionRate() << "\n"
              << "总工资：" << get_salary() << endl;
     }
+
+    // 实现 save
+    void save(ofstream &out) override
+    {
+        out << "Salesmanager" << ' ' << get_name() << ' ' << get_sex() << ' ' << get_grade() << ' '
+            << get_fixedSalary() << ' ' << get_salesAmount() << ' ' << get_commissionRate() << ' '
+            << get_birthMonth() << ' ' << get_birthDay() << '\n';
+    }
 };
 
 // 动态数组类，存指针，指向各个员工对象
@@ -227,6 +269,8 @@ public:
     }
     ~EmployeeArray()
     {
+        for (int i = 0; i < size; ++i)
+            delete data[i];
         delete[] data;
     }
     void push()
@@ -240,6 +284,7 @@ public:
         int fixedSalary;
         int salesAmount;
         float commissionRate;
+        int bm, bd; // 生日月日
         // 扩容
         if (size == capacity)
         {
@@ -256,79 +301,144 @@ public:
             cout << "员工的职位是：" << endl;
             cout << '>';
             cin >> role;
+
             if (role == "技术人员" || role == "技术" || role == "jishu")
             {
-                cout << "请依次输入姓名、性别、级别(1-5)、每日工作时长、每小时薪水" << endl;
-                cin >> name >> sex >> grade >> workHours >> hourRate;
-                Employee *p = new Technician(name, sex, grade, workHours, hourRate);
+                cout << "请输入姓名：" << endl;
+                cout << '>';
+                cin >> name;
+
+                cout << "请输入性别：" << endl;
+                cout << '>';
+                cin >> sex;
+
+                cout << "请输入级别(1-5)：" << endl;
+                cout << '>';
+                cin >> grade;
+
+                cout << "请输入每日工作时长：" << endl;
+                cout << '>';
+                cin >> workHours;
+
+                cout << "请输入每小时薪水：" << endl;
+                cout << '>';
+                cin >> hourRate;
+
+                cout << "请输入出生月：" << endl;
+                cout << '>';
+                cin >> bm;
+
+                cout << "请输入出生日：" << endl;
+                cout << '>';
+                cin >> bd;
+
+                Employee *p = new Technician(name, sex, grade, workHours, hourRate, bm, bd);
                 data[size++] = p;
-                // if (sex == "男" || sex == "女")
-                // {
-                //     Employee *p = new Technician(name, sex, grade, workHours, hourRate);
-                //     data[size++] = p;
-                // }
-                // else
-                // {
-                //     cout << "性别输入错误请重新输入" << endl;
-                //     continue;
-                // }
                 break;
             }
             // 录入经理信息
             else if (role == "经理" || role == "jingli")
             {
-                cout << "请依次输入姓名、性别、级别(1-5)、固定月薪" << endl;
-                cin >> name >> sex >> grade >> fixedSalary;
-                Employee *p = new Manager(name, sex, grade, fixedSalary);
+                cout << "请输入姓名：" << endl;
+                cout << '>';
+                cin >> name;
+
+                cout << "请输入性别：" << endl;
+                cout << '>';
+                cin >> sex;
+
+                cout << "请输入级别(1-5)：" << endl;
+                cout << '>';
+                cin >> grade;
+
+                cout << "请输入固定月薪：" << endl;
+                cout << '>';
+                cin >> fixedSalary;
+
+                cout << "请输入出生月：" << endl;
+                cout << '>';
+                cin >> bm;
+
+                cout << "请输入出生日：" << endl;
+                cout << '>';
+                cin >> bd;
+
+                Employee *p = new Manager(name, sex, grade, fixedSalary, bm, bd);
                 data[size++] = p;
-                // if (sex == "男" || sex == "女")
-                // {
-                //     Employee *p = new Manager(name, sex, grade, fixedSalary);
-                //     data[size++] = p;
-                // }
-                // else
-                // {
-                //     cout << "性别输入错误请重新输入" << endl;
-                //     continue;
-                // }
                 break;
             }
             // 录入销售信息
-            else if (role == "销售" || role == "销售员" || role == "销售人员" || role == "xiaoshou")
+            else if (role == "销售" || role == "销售员" || role == "销售人员" || role == "xiaoshou" || role == "推销")
             {
-                cout << "请依次输入姓名、性别、级别(1-5)、当月销售额、提成比例" << endl;
-                cin >> name >> sex >> grade >> salesAmount >> commissionRate;
-                Employee *p = new Salesman(name, sex, grade, salesAmount, commissionRate);
+                cout << "请输入姓名：" << endl;
+                cout << '>';
+                cin >> name;
+
+                cout << "请输入性别：" << endl;
+                cout << '>';
+                cin >> sex;
+
+                cout << "请输入级别(1-5)：" << endl;
+                cout << '>';
+                cin >> grade;
+
+                cout << "请输入当月销售额：" << endl;
+                cout << '>';
+                cin >> salesAmount;
+
+                cout << "请输入提成比例：" << endl;
+                cout << '>';
+                cin >> commissionRate;
+
+                cout << "请输入出生月：" << endl;
+                cout << '>';
+                cin >> bm;
+
+                cout << "请输入出生日：" << endl;
+                cout << '>';
+                cin >> bd;
+
+                Employee *p = new Salesman(name, sex, grade, salesAmount, commissionRate, bm, bd);
                 data[size++] = p;
-                // if (sex == "男" || sex == "女")
-                // {
-                //     Employee *p = new Salesman(name, sex, grade, salesAmount, commissionRate);
-                //     data[size++] = p;
-                // }
-                // else
-                // {
-                //     cout << "性别输入错误请重新输入" << endl;
-                //     continue;
-                // }
                 break;
             }
             // 录入销售经理信息
             else if (role == "销售经理" || role == "xiaoshoujingli")
             {
-                cout << "请依次输入姓名、性别、级别(1-5)、固定月薪、当月销售额、提成比例" << endl;
-                cin >> name >> sex >> grade >> fixedSalary >> salesAmount >> commissionRate;
-                Employee *p = new Salesmanager(name, sex, grade, fixedSalary, salesAmount, commissionRate);
+                cout << "请输入姓名：" << endl;
+                cout << '>';
+                cin >> name;
+
+                cout << "请输入性别：" << endl;
+                cout << '>';
+                cin >> sex;
+
+                cout << "请输入级别(1-5)：" << endl;
+                cout << '>';
+                cin >> grade;
+
+                cout << "请输入固定月薪：" << endl;
+                cout << '>';
+                cin >> fixedSalary;
+
+                cout << "请输入当月销售额：" << endl;
+                cout << '>';
+                cin >> salesAmount;
+
+                cout << "请输入提成比例：" << endl;
+                cout << '>';
+                cin >> commissionRate;
+
+                cout << "请输入出生月：" << endl;
+                cout << '>';
+                cin >> bm;
+
+                cout << "请输入出生日：" << endl;
+                cout << '>';
+                cin >> bd;
+
+                Employee *p = new Salesmanager(name, sex, grade, fixedSalary, salesAmount, commissionRate, bm, bd);
                 data[size++] = p;
-                // if (sex == "男" || sex == "女")
-                // {
-                //     Employee *p = new Salesmanager(name, sex, grade, fixedSalary, salesAmount, commissionRate);
-                //     data[size++] = p;
-                // }
-                // else
-                // {
-                //     cout << "性别输入错误请重新输入" << endl;
-                //     continue;
-                // }
                 break;
             }
             else
@@ -395,6 +505,7 @@ public:
                 for (int i = idx; i < size - 1; i++)
                     data[i] = data[i + 1];
                 size--;
+                break; // 删除后退出循环
             }
         }
         if (idx == -1)
@@ -420,6 +531,7 @@ public:
                 for (int i = idx; i < size - 1; i++)
                     data[i] = data[i + 1];
                 size--;
+                break; // 删除后退出循环
             }
         }
         if (idx == -1)
@@ -435,7 +547,7 @@ public:
         for (int i = 0; i < size; i++)
         {
             data[i]->printInfo();
-            cout << "\n";
+            cout << endl;
         }
     }
     void salary_count_display()
@@ -457,6 +569,8 @@ public:
             else if (data[i]->get_role() == "Salesmanager")
                 salary_Salesmanager += data[i]->get_salary();
         }
+        if (salary_amount == 0)
+            salary_amount = 1; // 防止除0
         cout << "所有员工的总工资为：" << salary_amount << "\n"
              << "技术人员的总工资占比为：" << salary_Technician / salary_amount << "\n"
              << "所有经理的总工资占比为：" << salary_Manager / salary_amount << "\n"
@@ -478,61 +592,207 @@ public:
             }
         }
     }
+
+    // 生日提醒
+    void birthday_remind()
+    {
+        int m, d;
+        cout << "请输入今天的日期（月 日）：" << endl;
+        cout << '>';
+        cin >> m >> d;
+
+        bool found = false;
+        for (int i = 0; i < size; i++)
+        {
+            if (data[i]->get_birthMonth() == m && data[i]->get_birthDay() == d)
+            {
+                cout << "今天是员工 " << data[i]->get_name() << " 的生日！" << endl;
+                found = true;
+            }
+        }
+        if (!found)
+            cout << "今天没有员工过生日。" << endl;
+    }
+
+    void save_to_file()
+    {
+        ofstream out("employees.txt");
+        if (!out)
+        {
+            cout << "保存文件失败" << endl;
+            return;
+        }
+        for (int i = 0; i < size; ++i)
+        {
+            data[i]->save(out);
+        }
+        out.close();
+        cout << "已保存到 employees.txt" << endl;
+    }
+
+    void load_from_file()
+    {
+        ifstream in("employees.txt");
+        if (!in)
+            return; // 文件不存在则直接返回
+
+        // 清掉当前数据（若有）
+        for (int i = 0; i < size; ++i)
+            delete data[i];
+        size = 0;
+
+        string role;
+        while (in >> role)
+        {
+            string name, sex;
+            int grade;
+            int bm = 0, bd = 0;
+
+            if (size == capacity)
+            {
+                int newCap = capacity > 0 ? capacity * 2 : 1;
+                Employee **newData = new Employee *[newCap];
+                for (int k = 0; k < size; ++k)
+                    newData[k] = data[k];
+                delete[] data;
+                data = newData;
+                capacity = newCap;
+            }
+
+            if (role == "Technician")
+            {
+                int workHours, hourRate;
+                in >> name >> sex >> grade >> workHours >> hourRate >> bm >> bd;
+                Employee *p = new Technician(name, sex, grade, workHours, hourRate, bm, bd);
+                data[size++] = p;
+            }
+            else if (role == "Manager")
+            {
+                int fixedSalary;
+                in >> name >> sex >> grade >> fixedSalary >> bm >> bd;
+                Employee *p = new Manager(name, sex, grade, fixedSalary, bm, bd);
+                data[size++] = p;
+            }
+            else if (role == "Salesman")
+            {
+                int salesAmount;
+                float commissionRate;
+                in >> name >> sex >> grade >> salesAmount >> commissionRate >> bm >> bd;
+                Employee *p = new Salesman(name, sex, grade, salesAmount, commissionRate, bm, bd);
+                data[size++] = p;
+            }
+            else if (role == "Salesmanager")
+            {
+                int fixedSalary, salesAmount;
+                float commissionRate;
+                in >> name >> sex >> grade >> fixedSalary >> salesAmount >> commissionRate >> bm >> bd;
+                Employee *p = new Salesmanager(name, sex, grade, fixedSalary, salesAmount, commissionRate, bm, bd);
+                data[size++] = p;
+            }
+            else
+            {
+                string rest;
+                getline(in, rest);
+            }
+        }
+
+        in.close();
+        if (size > 0)
+            cout << "已从 employees.txt 中加载 " << size << " 条员工记录。" << endl;
+    }
 };
 
 int main()
 {
     EmployeeArray e(1);
+    e.load_from_file();
+
     while (1)
     {
         int i;
+        cout << "------企业员工管理系统------" << endl;
         cout << "录入员工信息请按1" << endl;
-        cout << "按名字查询员工信息请按2" << endl;
-        cout << "按id查询员工信息请按3" << endl;
-        cout << "按名字删除员工信息请按4" << endl;
-        cout << "按id删除员工信息请按5" << endl;
-        cout << "罗列所有员工信息请按6" << endl;
-        cout << "计算并展示工资占比情况请按7" << endl;
-        cout << "晋升员工请按8" << endl;
-        cout << "退出程序请按9" << endl;
+        cout << "查询员工信息请按2" << endl;
+        cout << "删除员工信息请按3" << endl;
+        cout << "罗列所有员工信息请按4" << endl;
+        cout << "计算并展示工资占比情况请按5" << endl;
+        cout << "晋升员工请按6" << endl;
+        cout << "员工生日提醒请按7" << endl;
+        cout << "退出程序请按8（退出前会自动保存）" << endl;
         cout << '>';
         cin >> i;
+
+        // 基本的输入错误处理，防止字母导致死循环（最小改动）
+        if (cin.fail())
+        {
+            cin.clear();
+            cin.ignore(10000, '\n');
+            cout << "输入错误，请输入数字！" << endl;
+            continue;
+        }
+
         switch (i)
         {
         case 1:
-            int i;
+        {
+            int n;
             cout << "要录入几个员工？" << endl;
             cout << '>';
-            cin >> i;
-            while (i--)
+            cin >> n;
+            while (n--)
                 e.push();
             break;
-        case 2:
-            e.lookup_name();
-            break;
-        case 3:
-            e.lookup_id();
-            break;
-        case 4:
-            e.remove_by_name();
-            break;
-        case 5:
-            e.remove_by_id();
-            break;
-        case 6:
-            e.list_all_employees();
-            break;
-        case 7:
-            e.salary_count_display();
-            break;
-        case 8:
-            e.promote();
-            break;
-        case 9:
-            exit(0);
-        default:
+        }
+        case 2: // 查询
+        {
+            int op;
+            cout << "按姓名查询请按1，按id查询请按2" << endl;
+            cout << '>';
+            cin >> op;
+            if (op == 1)
+                e.lookup_name();
+            else if (op == 2)
+                e.lookup_id();
+            else
+                cout << "输入错误" << endl;
             break;
         }
-        cout << "----------------------------" << endl;
+        case 3: // 删除
+        {
+            int op;
+            cout << "按姓名删除请按1，按id删除请按2" << endl;
+            cout << '>';
+            cin >> op;
+            if (op == 1)
+                e.remove_by_name();
+            else if (op == 2)
+                e.remove_by_id();
+            else
+                cout << "输入错误" << endl;
+            break;
+        }
+        case 4:
+            e.list_all_employees();
+            break;
+        case 5:
+            e.salary_count_display();
+            break;
+        case 6:
+            e.promote();
+            break;
+        case 7:
+            e.birthday_remind();
+            break;
+        case 8:
+            e.save_to_file();
+            return 0;
+        default:
+            cout << "输入错误，请重新选择" << endl;
+            break;
+        }
+        cout << '\n'
+             << "按回车以继续......";
+        cin.ignore();
+        cin.get();
     }
 }

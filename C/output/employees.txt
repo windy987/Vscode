@@ -1,0 +1,3 @@
+Manager 1 1 1 1 1 1
+Technician 1 2 2 2 2 2 2
+Salesmanager 5 5 5 5 5 5 5 5
