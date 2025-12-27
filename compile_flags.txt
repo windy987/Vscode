@@ -1,0 +1,9 @@
+-ID:/code interpreter/mingw64/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++
+-ID:/code interpreter/mingw64/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/x86_64-w64-mingw32
+-ID:/code interpreter/mingw64/lib/gcc/x86_64-w64-mingw32/15.1.0/include/c++/backward
+-ID:/code interpreter/mingw64/lib/gcc/x86_64-w64-mingw32/15.1.0/include-fixed
+-ID:/code interpreter/mingw64/x86_64-w64-mingw32/include
+-std=c++17
+--target=x86_64-w64-mingw32
+-Wall
+-Wextra
