@@ -1,5 +1,7 @@
+#include <clocale>
 #include <fstream>
 #include <iostream>
+#include <windows.h>
 using namespace std;
 
 // 员工基类
@@ -344,9 +346,21 @@ public:
                 cout << '>';
                 cin >> name;
 
-                cout << "请输入性别：" << endl;
-                cout << '>';
-                cin >> sex;
+                while (1)
+                {
+                    cout << "请输入性别（男/女）：" << endl;
+                    cout << '>';
+                    cin >> sex;
+
+                    if (sex == "男" || sex == "女")
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        cout << "性别输入错误，只能输入'男'或'女'，请重新输入！" << endl;
+                    }
+                }
 
                 cout << "请输入级别(1-5)：" << endl;
                 cout << '>';
@@ -379,9 +393,21 @@ public:
                 cout << '>';
                 cin >> name;
 
-                cout << "请输入性别：" << endl;
-                cout << '>';
-                cin >> sex;
+                while (1)
+                {
+                    cout << "请输入性别（男/女）：" << endl;
+                    cout << '>';
+                    cin >> sex;
+
+                    if (sex == "男" || sex == "女")
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        cout << "性别输入错误，只能输入'男'或'女'，请重新输入！" << endl;
+                    }
+                }
 
                 cout << "请输入级别(1-5)：" << endl;
                 cout << '>';
@@ -410,9 +436,21 @@ public:
                 cout << '>';
                 cin >> name;
 
-                cout << "请输入性别：" << endl;
-                cout << '>';
-                cin >> sex;
+                while (1)
+                {
+                    cout << "请输入性别（男/女）：" << endl;
+                    cout << '>';
+                    cin >> sex;
+
+                    if (sex == "男" || sex == "女")
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        cout << "性别输入错误，只能输入'男'或'女'，请重新输入！" << endl;
+                    }
+                }
 
                 cout << "请输入级别(1-5)：" << endl;
                 cout << '>';
@@ -445,9 +483,21 @@ public:
                 cout << '>';
                 cin >> name;
 
-                cout << "请输入性别：" << endl;
-                cout << '>';
-                cin >> sex;
+                while (1)
+                {
+                    cout << "请输入性别（男/女）：" << endl;
+                    cout << '>';
+                    cin >> sex;
+
+                    if (sex == "男" || sex == "女")
+                    {
+                        break;
+                    }
+                    else
+                    {
+                        cout << "性别输入错误，只能输入'男'或'女'，请重新输入！" << endl;
+                    }
+                }
 
                 cout << "请输入级别(1-5)：" << endl;
                 cout << '>';
@@ -740,6 +790,9 @@ public:
 
 int main()
 {
+    SetConsoleCP(936);        // 设置控制台输入代码页为 GBK
+    SetConsoleOutputCP(936);  // 设置控制台输出代码页为 GBK
+    setlocale(LC_ALL, "chs"); // 设置 C 运行库区域为中文
     EmployeeArray e(1);
     e.load_from_file();
 
