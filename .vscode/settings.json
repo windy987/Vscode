@@ -1,0 +1,9 @@
+﻿{
+    "files.associations": {
+        "ostream": "cpp",
+        "iostream": "cpp",
+        "fstream": "cpp"
+    },
+    "chatgpt.commentCodeLensEnabled": true,
+    "chatgpt.openOnStartup": false
+}

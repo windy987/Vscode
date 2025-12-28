@@ -1,0 +1,68 @@
+---
+# 微软 Visual Studio 风格配置
+BasedOnStyle: Microsoft
+
+# 缩进宽度设置为 4 个空格
+IndentWidth: 4
+
+# Tab 宽度
+TabWidth: 4
+
+# 不使用 Tab，使用空格
+UseTab: Never
+
+# 续行缩进宽度
+ContinuationIndentWidth: 4
+
+# 构造函数初始化列表缩进
+ConstructorInitializerIndentWidth: 4
+
+# 访问修饰符偏移（public, private, protected）
+AccessModifierOffset: -4
+
+# 列宽限制
+ColumnLimit: 120
+
+# 指针和引用对齐方式（Left: int* ptr, Right: int *ptr）
+PointerAlignment: Left
+
+# 大括号换行风格 - Allman 风格（花括号另起一行）
+BreakBeforeBraces: Allman
+
+# 命名空间缩进
+NamespaceIndentation: None
+
+# 在二元操作符前换行
+BreakBeforeBinaryOperators: None
+
+# 允许短的函数写在一行
+AllowShortFunctionsOnASingleLine: None
+
+# 允许短的 if 语句写在一行
+AllowShortIfStatementsOnASingleLine: Never
+
+# 允许短的循环写在一行
+AllowShortLoopsOnASingleLine: false
+
+# 允许短的 case 标签写在一行
+AllowShortCaseLabelsOnASingleLine: false
+
+# 允许短的块写在一行
+AllowShortBlocksOnASingleLine: Never
+
+# switch 语句中 case 缩进
+IndentCaseLabels: false
+
+# 花括号包裹风格
+BraceWrapping:
+  AfterClass: true
+  AfterControlStatement: true
+  AfterEnum: true
+  AfterFunction: true
+  AfterNamespace: true
+  AfterStruct: true
+  AfterUnion: true
+  BeforeCatch: true
+  BeforeElse: true
+
+---

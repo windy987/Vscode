@@ -1,0 +1,14 @@
+﻿{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "name": "Debug (g++ -> C/output)",
+            "type": "lldb",
+            "request": "launch",
+            "program": "\\C\\output\\.exe",
+            "args": [],
+            "cwd": "\\C",
+            "preLaunchTask": "build active file to C/output (g++)"
+        }
+    ]
+}
