@@ -1,39 +1,70 @@
-﻿{
+{
 	"version": "2.0.0",
 	"tasks": [
 		{
-			"label": "Create C/output folder",
+			"label": "C/C++",
 			"type": "shell",
-			"command": "cmd",
-			"args": [
-				"/c",
-				"if not exist \"\\C\\output\" mkdir \"\\C\\output\""
-			],
-			"problemMatcher": []
-		},
-		{
-			"type": "shell",
-			"label": "build active file to C/output (g++)",
-			"command": "D:\\code interpreter\\mingw64\\bin\\g++.exe",
-			"args": [
-				"-fdiagnostics-color=always",
-				"-g",
-				"",
-				"-o",
-				"\\C\\output\\.exe"
-			],
+			"command": "if (!(Test-Path \"${fileDirname}\\output\")) { New-Item -ItemType Directory -Force -Path \"${fileDirname}\\output\" | Out-Null }; & 'D:\\code interpreter\\mingw64\\bin\\g++.exe' -Wall -Wextra -g3 -finput-charset=UTF-8 -fexec-charset=GBK \"${file}\" -o \"${fileDirname}\\output\\${fileBasenameNoExtension}.exe\" ; if ($?) { & \"${fileDirname}\\output\\${fileBasenameNoExtension}.exe\" }",
 			"options": {
-				"cwd": "\\C"
+				"shell": {
+					"executable": "powershell.exe",
+					"args": [
+						"-NoProfile",
+						"-Command"
+					]
+				}
 			},
-			"problemMatcher": [],
 			"group": {
 				"kind": "build",
 				"isDefault": true
 			},
-			"dependsOn": [
-				"Create C/output folder"
+			"presentation": {
+				"echo": true,
+				"reveal": "always",
+				"focus": true,
+				"panel": "shared"
+			},
+			"problemMatcher": [],
+			"detail": "使用 g++ 编译当前文件到 output 文件夹，并立即运行"
+		},
+		{
+			"label": "创建 output 目录",
+			"type": "shell",
+			"command": "cmd",
+			"args": [
+				"/c",
+				"if not exist \"${fileDirname}\\output\" mkdir \"${fileDirname}\\output\""
 			],
-			"detail": "使用 g++ 编译当前文件并输出到 C/output 文件夹"
+			"problemMatcher": [],
+			"presentation": {
+				"reveal": "never",
+				"panel": "shared"
+			}
+		},
+		{
+			"type": "shell",
+			"label": "C/C++: g++.exe 仅编译到 output",
+			"command": "D:\\code interpreter\\mingw64\\bin\\g++.exe",
+			"args": [
+				"-fdiagnostics-color=always",
+				"-Wall",
+				"-Wextra",
+				"-g3",
+				"-finput-charset=UTF-8",
+				"-fexec-charset=GBK",
+				"${file}",
+				"-o",
+				"${fileDirname}\\output\\${fileBasenameNoExtension}.exe"
+			],
+			"options": {
+				"cwd": "${fileDirname}"
+			},
+			"problemMatcher": [],
+			"group": "build",
+			"dependsOn": [
+				"创建 output 目录"
+			],
+			"detail": "仅使用 g++ 编译，不运行"
 		}
 	]
 }
