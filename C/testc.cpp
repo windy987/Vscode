@@ -242,8 +242,7 @@ void floyd_fix(char sChar, char tChar)
 
     vector<vector<int>> dist(n, vector<int>(n, INF));
 
-    // 修改1：原来 nxt[i][j] 只存一个“下一跳”
-    // 现在改成 nexts[i][j] 存多个“下一跳”，用于恢复多条最短路
+    // nexts[i][j] 存多个“下一跳”，用于恢复多条最短路
     vector<vector<vector<int>>> nexts(n, vector<vector<int>>(n));
 
     // 初始化
@@ -276,7 +275,6 @@ void floyd_fix(char sChar, char tChar)
 
                 int nd = dist[i][k] + dist[k][j];
 
-                // 修改2：更短时覆盖；相等时合并“下一跳”
                 if (nd < dist[i][j])
                 {
                     dist[i][j] = nd;
@@ -299,9 +297,8 @@ void floyd_fix(char sChar, char tChar)
     cout << "最短距离: " << dist[s][t] << '\n';
     cout << "所有最短路径:\n";
 
-    // 修改3：DFS 按“多下一跳”枚举并打印所有最短路径
     vector<int> path;
-    vector<int> vis(n, 0); // 防止路径回环（稳妥处理）
+    vector<int> vis(n, 0); // 防止路径回环
 
     path.push_back(s);
     vis[s] = 1;
@@ -335,6 +332,54 @@ void floyd_fix(char sChar, char tChar)
     dfs(dfs, s);
 }
 
+void prim()
+{
+    // lowcost[i]: 当前已选集合到顶点 i 的最小边权（INF 表示不可达）
+    // closest[i]: 与顶点 i 相连、使边权最小的已选顶点
+    vector<int> lowcost(n, INF), closest(n, -1), inMST(n, 0);
+
+    // 从顶点 0（A）出发
+    lowcost[0] = 0;
+    int totalCost = 0;
+
+    cout << "Prim 最小生成树（从 " << vex[0] << " 出发）:\n";
+
+    for (int i = 0; i < n; ++i)
+    {
+        // 从未加入 MST 的顶点中选取 lowcost 最小的
+        int u = -1;
+        for (int j = 0; j < n; ++j)
+        {
+            if (!inMST[j] && (u == -1 || lowcost[j] < lowcost[u]))
+                u = j;
+        }
+
+        if (lowcost[u] == INF)
+        {
+            cout << "图不连通，无法构成最小生成树\n";
+            return;
+        }
+
+        inMST[u] = 1;
+        totalCost += lowcost[u];
+
+        if (closest[u] != -1) // 起始顶点不打印边
+            cout << "  " << vex[closest[u]] << " -- " << vex[u] << "  权值: " << lowcost[u] << "\n";
+
+        // 用新加入的顶点 u 更新候选边
+        for (int v = 0; v < n; ++v)
+        {
+            if (!inMST[v] && G[u][v] < lowcost[v])
+            {
+                lowcost[v] = G[u][v];
+                closest[v] = u;
+            }
+        }
+    }
+
+    cout << "最小生成树总权值: " << totalCost << "\n";
+}
+
 int main()
 {
     // for (int i = 0; i < n; i++)
@@ -351,8 +396,10 @@ int main()
     // return 0;
     // dijkstra('A', 'D');
     // cout << '\n';
-    // dijkstra_fix('A', 'D');
-    // cout << '\n';
-    floyd('A', 'D');
+    dijkstra_fix('A', 'D');
+    cout << '\n';
+    floyd_fix('A', 'D');
+    cout << '\n';
+    prim();
     return 0;
 }
