@@ -73,5 +73,6 @@ int main()
         if (S[i] - lower > ans)
             ans = S[i] - lower;
     }
+
     cout << ans;
 }
